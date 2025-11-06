@@ -1,0 +1,50 @@
+plugins {
+    id 'java-library'
+    id "net.serenity-bdd.serenity-gradle-plugin" version "4.3.2"
+}
+
+group = 'org.example'
+version = '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'net.serenity-bdd:serenity-screenplay:4.3.2'
+    implementation 'net.serenity-bdd:serenity-screenplay-webdriver:4.3.2'
+    api 'net.serenity-bdd:serenity-core:4.3.2'
+    annotationProcessor 'net.serenity-bdd:serenity-core:4.3.2'
+    testImplementation 'net.serenity-bdd:serenity-junit:4.3.2'
+    testImplementation 'net.serenity-bdd:serenity-cucumber:4.3.2'
+    testImplementation 'org.slf4j:slf4j-simple:2.0.5'
+
+    // --- INICIO DE CAMBIOS EN DEPENDENCIAS ---
+    // Mantenemos la plataforma (BOM) de JUnit 5
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter-api'
+
+    // Mantenemos los motores de ejecución de JUnit 5
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // !!! ESTA ES LA LÍNEA CLAVE QUE FALTABA !!!
+    // Añade el motor "Vintage" para que JUnit 5 pueda ejecutar tus pruebas de JUnit 4
+    testRuntimeOnly 'org.junit.vintage:junit-vintage-engine'
+    // --- FIN DE CAMBIOS EN DEPENDENCIAS ---
+}
+
+// --- INICIO DE CAMBIOS EN LA TAREA 'test' ---
+test {
+    testLogging.showStandardStreams = true
+    systemProperties System.getProperties()
+}
+// --- FIN DE CAMBIOS EN LA TAREA 'test' ---
+
+serenity {
+    reports = ["single-page-html"]
+    // Esta línea no es necesaria si usas la tarea 'test' de Gradle.
+    // La tarea 'test' ya sabe dónde buscar gracias a la configuración de 'include'.
+    // Puedes comentarla o dejarla, no afectará la ejecución.
+    // testRoot = "src/test/resources/features"
+}
